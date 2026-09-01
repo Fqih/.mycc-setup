@@ -1,0 +1,46 @@
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.iml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.venv/
+venv/
+
+# Secrets — JANGAN PERNAH commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account.json
+secrets.yaml
+secrets.yml
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+
+# Node
+node_modules/
+.npm/
+.pnpm-store/
+
+# Logs
+*.log
