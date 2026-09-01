@@ -1,10 +1,26 @@
 # Fqih's Claude Code Setup
 
-Setup Claude Code pribadi saya (Fqih). Repo publik ini jadi **sumber kebenaran** untuk konfigurasi global Claude Code yang sinkron antar device.
+Setup Claude Code pribadi saya (Fqih). Repo publik ini adalah **sumber kebenaran** untuk konfigurasi global Claude Code yang sinkron antar device.
 
 ## Apa ini
 
-Bukan plugin atau marketplace. Ini adalah **dokumentasi + referensi path** ke skill/rule/command yang saya pakai di `~/.claude/` global, plus script setup untuk device baru.
+Repo ini berisi **mirror** skill/rule/agent/command yang saya install di `~/.claude/` global. Bukan plugin — ini file markdown langsung yang bisa di-copy atau di-symlink ke `~/.claude/` di device baru.
+
+**Struktur:**
+```
+.
+├── README.md           # this file
+├── LICENSE             # MIT
+├── NOTICE.md           # attribution untuk forked content
+├── .gitignore          # exclude secrets, editor junk
+├── .gitleaks.toml      # config untuk secret-scan
+├── rules/              # 9 markdown rules → ~/.claude/rules/
+├── skills/             # 20 markdown skills → ~/.claude/skills/
+├── agents/             # 9 agent definitions → ~/.claude/agents/
+└── commands/           # 15 slash commands → ~/.claude/commands/
+```
+
+Lihat [NOTICE.md](NOTICE.md) untuk attribution konten forked dari [WorldFlowAI/everything-claude-code](https://github.com/WorldFlowAI/everything-claude-code) (MIT).
 
 ## Profil
 
@@ -33,7 +49,7 @@ Skill `atomic-github-push` hard-block violation. Skill `secret-scan` hard-block 
 
 ## Skills custom (5)
 
-Semua skill terinstall di `~/.claude/skills/`:
+Semua skill ada di `skills/` repo ini dan terinstall di `~/.claude/skills/`:
 
 | Skill | Fungsi |
 |---|---|
@@ -43,19 +59,21 @@ Semua skill terinstall di `~/.claude/skills/`:
 | `remote-workflow` | Tailscale + SSH + code-server. Akses laptop dari HP/Pavilion. |
 | `local-ml-gpu` | ROCm (Zephyrus) + CUDA (Pavilion) workflow. |
 
-## Skills, rules, commands terinstall
+Plus 4 custom lain (`fullstack-web`, `notebook-hygiene`, `ds-workflow`, `llm-engineering`). Total 9 skill custom + 11 skill forked dari ECC.
 
-Base dari [WorldFlowAI/everything-claude-code](https://github.com/WorldFlowAI/everything-claude-code) (MIT, cherry-picked).
+## Skills, rules, agents, commands (full mirror)
 
-**8 rules** di `~/.claude/rules/`:
+Di repo ini ada full mirror, jadi bisa langsung di-copy tanpa download dari upstream.
+
+**9 rules** di `rules/`:
 - agents, coding-style, git-workflow, hooks, patterns, performance, security, testing, scientific-python
 
-**20 skills** di `~/.claude/skills/` — lihat list di setup script.
+**20 skills** di `skills/` — termasuk 11 forked dari [WorldFlowAI/everything-claude-code](https://github.com/WorldFlowAI/everything-claude-code) (MIT) + 9 custom Fqih.
 
-**9 agents** di `~/.claude/agents/`:
+**9 agents** di `agents/`:
 - architect, build-error-resolver, code-reviewer, doc-updater, e2e-runner, planner, refactor-cleaner, security-reviewer, tdd-guide
 
-**15 commands** di `~/.claude/commands/`:
+**15 commands** di `commands/`:
 - `/build-fix`, `/checkpoint`, `/code-review`, `/e2e`, `/eval`, `/learn`, `/orchestrate`, `/plan`, `/refactor-clean`, `/setup-pm`, `/tdd`, `/test-coverage`, `/update-codemaps`, `/update-docs`, `/verify`
 
 ## MCP servers
@@ -97,23 +115,16 @@ tar xzf /tmp/gitleaks.tar.gz -C ~/.local/bin/ gitleaks
 rm /tmp/gitleaks.tar.gz
 export PATH="$HOME/.local/bin:$PATH"
 
-# 4. Install skills/rules/agents/commands dari source
-# Base: WorldFlowAI/everything-claude-code
-git clone --depth 1 https://github.com/WorldFlowAI/everything-claude-code.git /tmp/ecc
+# 4. Install skills/rules/agents/commands dari repo ini (full mirror)
 mkdir -p ~/.claude/{rules,skills,agents,commands}
-cp /tmp/ecc/rules/*.md ~/.claude/rules/
-cp -r /tmp/ecc/skills/* ~/.claude/skills/
-cp /tmp/ecc/agents/*.md ~/.claude/agents/
-cp /tmp/ecc/commands/*.md ~/.claude/commands/
-rm -rf /tmp/ecc
-
-# 5. Install skill custom dari repo ini
 cp -r ~/.mycc-setup/skills/* ~/.claude/skills/
+cp ~/.mycc-setup/rules/*.md ~/.claude/rules/
+cp ~/.mycc-setup/agents/*.md ~/.claude/agents/
+cp ~/.mycc-setup/commands/*.md ~/.claude/commands/
 
-# 6. Setup MCP jupyter di ~/.claude.json
-# (merge ke mcpServers section — lihat ~/.mycc-setup/mcp-servers.example.json)
+# 5. (Opsional) Setup MCP jupyter di ~/.claude.json — lihat ~/.mycc-setup/mcp-servers.example.json
 
-# 7. Verify
+# 6. Verify
 git config --global user.name   # harus: Fqih
 git config --global user.email  # harus: mhmdfkih21@gmail.com
 ~/.local/bin/gitleaks version
@@ -135,9 +146,14 @@ py -m pip install --user mlflow nbstripout
 
 # gitleaks: download .zip dari release, ekstrak ke folder di PATH
 
-# 4. Skills: copy manual isi ~/.mycc-setup/skills/* ke %USERPROFILE%\.claude\skills\
-
-# 5. Edit %USERPROFILE%\.claude.json — tambah mcpServers.jupyter section
+# 4. Copy mirror
+$src = "$HOME\.mycc-setup"
+$dst = "$env:USERPROFILE\.claude"
+New-Item -ItemType Directory -Force -Path "$dst\rules", "$dst\skills", "$dst\agents", "$dst\commands" | Out-Null
+Copy-Item -Recurse -Force "$src\skills\*" "$dst\skills\"
+Copy-Item -Force "$src\rules\*.md" "$dst\rules\"
+Copy-Item -Force "$src\agents\*.md" "$dst\agents\"
+Copy-Item -Force "$src\commands\*.md" "$dst\commands\"
 ```
 
 ## Tailscale mesh
