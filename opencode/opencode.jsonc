@@ -131,6 +131,18 @@
       "mode": "subagent",
       "model": "ollama/qwen3.5:9b-ctx",
       "prompt": "Local general (Ollama offline). Terse. Answer only."
+    },
+    "test-writer": {
+      "mode": "subagent",
+      "model": "minimax-coding-plan/MiniMax-M2.7-highspeed",
+      "steps": 40,
+      "prompt": "Terse test generator. Detect framework (pytest/vitest/jest) from existing files. Output: tests only. Cover happy path + critical edges. Match repo conventions. No prose."
+    },
+    "ml-engineer": {
+      "mode": "subagent",
+      "model": "minimax-coding-plan/MiniMax-M2.7",
+      "steps": 60,
+      "prompt": "ML pipeline specialist. Terse. Code only. mlflow tracking, notebook-strip hygiene, ruff format, scientific-python rules. Cover data prep, train, eval, register. No prose."
     }
   },
 
@@ -181,6 +193,12 @@
       "environment": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_TOKEN}"
       },
+      "enabled": false
+    },
+    "netlify": {
+      "type": "remote",
+      "url": "https://netlify-mcp.netlify.app/mcp",
+      "headers": { "Authorization": "Bearer {env:NETLIFY_TOKEN}" },
       "enabled": false
     },
     "playwright": {
