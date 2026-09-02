@@ -92,7 +92,8 @@ fi
 if [ -x "${HOME}/.local/bin/tg-notify" ]; then
     BRANCH=$(git branch --show-current)
     REMOTE=$(git remote get-url origin 2>/dev/null | sed 's|.*github.com[:/]||;s|\.git$||')
-    "${HOME}/.local/bin/tg-notify "pushing → $REMOTE/$BRANCH" 2>/dev/null || true
+    msg="pushing → ${REMOTE}/${BRANCH}"
+    "${HOME}/.local/bin/tg-notify" "$msg" 2>/dev/null || true
 fi
 
 exit 0
