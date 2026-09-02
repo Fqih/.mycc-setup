@@ -45,3 +45,28 @@ If build fails:
 2. Analyze error messages
 3. Fix incrementally
 4. Verify after each fix
+
+## Overnight / Long-Running Agent Loop
+
+For long sessions (e.g. background work overnight):
+
+- Batch work into 1-2 features per batch, not one giant task
+- Commit and push per batch; pre-push hook triggers Telegram notify
+- Compaction auto-runs at context limit; tune via `compaction.tail_turns` and `preserve_recent_tokens`
+- Each agent has a `steps` limit to prevent runaway loops
+- opencode snapshot is on by default; sessions resume after crash
+- Qwen (paid) is invoked only via the `coder` agent for complex code; routine work stays on `coder-minimax` (free)
+- Avoid one-commit-per-file churn; push in coherent batches
+
+A typical overnight timeline:
+
+```
+19:00  start session; write todowrite list
+19:15  batch 1 runs
+19:45  /commit && git push (telegram fires)
+20:00  batch 2 runs
+...
+08:00  morning: review last telegram notif
+```
+
+If the agent stalls or loops, stop the session and inspect `~/.local/share/opencode/`.

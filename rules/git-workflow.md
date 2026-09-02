@@ -12,6 +12,44 @@ Types: feat, fix, refactor, docs, test, chore, perf, ci
 
 Note: Attribution disabled globally via ~/.claude/settings.json.
 
+## Commit Style (Professional, Not AI-Looking)
+
+Subject line:
+- Imperative mood: "add" not "added" / "adds"
+- Lowercase body after type prefix
+- Max 72 chars total
+- No trailing period
+- No emoji, no marketing words ("leverage", "robust", "seamless", "powerful")
+- No symbols like arrows or prices in subject
+
+Body:
+- Wrap at 72 chars per line
+- Bullet points: parallel structure, short, technical
+- Explain WHY not WHAT (the diff already shows WHAT)
+- Reference issue or ticket number if applicable
+
+Forbidden:
+- `Co-Authored-By:` trailers (per identity rules)
+- `🤖 Generated with ...` footers
+- Self-congratulatory phrasing
+- Mixed languages without reason
+- Excessive nesting of lists
+
+Good:
+```
+fix(auth): handle token refresh on 401
+
+retry once before failing the request to avoid
+flaky behavior on transient auth errors
+```
+
+Bad:
+```
+🚀 I have implemented an awesome, robust, and seamless
+authentication token refresh mechanism that handles 401
+errors beautifully! Co-Authored-By: Claude ✨
+```
+
 ## Pull Request Workflow
 
 When creating PRs:
@@ -41,20 +79,6 @@ When creating PRs:
    - Fix MEDIUM issues when possible
 
 4. **Commit & Push**
-   - Detailed commit messages
-   - Follow conventional commits format
-
-## Push → Telegram Notify (WAJIB)
-
-Setiap `git push` wajib mengirim notifikasi ke Telegram. Di-enforce oleh hook:
-
-- **Hook**: `hooks/pre-push.sh` section 5 memanggil `tg-notify` (`~/.local/bin/tg-notify`).
-- **Pasang sekali per mesin** (semua repo otomatis):
-  ```bash
-  git config --global core.hooksPath ~/.claude/hooks
-  ```
-  Atau per-repo: `ln -sf ~/.claude/hooks/pre-push.sh .git/hooks/pre-push`.
-- **Token/chat**: `~/.config/telegram.env` (chmod 600), jangan commit.
-- Push yang tidak lolos pre-push (identity salah, secret, non-fast-forward) **tidak** akan sampai ke Telegram karena hook berhenti sebelum section notify.
-
-`core.hooksPath` global meng-override hook per-repo klasik (`.git/hooks/`) — pastikan tidak ada repo yang butuh hook custom sendiri.
+   - Follow professional commit style above
+   - Conventional commit format
+   - One logical change per commit
