@@ -1,0 +1,197 @@
+{
+  // Global opencode config (migrated from Fqih/.mycc-setup)
+  "$schema": "https://opencode.ai/config.json",
+
+  // SWEETSPOT: kerja berat di MiniMax (Token Plan yang udah kebayar, $0 incremental), ringan di MiniMax-highspeed (free).
+  // Qwen (OpenRouter) = opsional, di-comment untuk dipakai saat budget OR memungkinkan (reasoning model $0.32/M in + hidden thinking).
+  // "model": "openrouter/qwen/qwen3.7-plus",  // uncomment untuk pakai Qwen head (berbayar)
+  "model": "minimax-coding-plan/MiniMax-M3",
+  "small_model": "ollama/qwen3.5:9b-ctx",
+  "default_agent": "build",
+
+  // PM bisa melibatkan subagent->subagent (nesting) untuk orkestrasi
+  "subagent_depth": 2,
+
+  // Guard keamanan: blokir perintah shell destruktif, sisanya bebas.
+  // (urutan penting: "*" allow dulu, aturan spesifik deny setelahnya = menang)
+  "permission": {
+    "bash": {
+      "*": "allow",
+      "rm -rf /*": "deny",
+      "rm -rf ~/*": "deny",
+      "sudo poweroff*": "deny",
+      "sudo reboot*": "deny",
+      "sudo shutdown*": "deny",
+      "dd if=*": "deny",
+      "mkfs*": "deny"
+    }
+  },
+
+  // Register Ollama lokal (OpenAI-compatible). Model ref = ollama/<nama-model>.
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": { "baseURL": "http://localhost:11434/v1" },
+      "models": {
+        "qwen3.5:9b-ctx": { "name": "Qwen 3.5 9B ctx (local)", "limit": { "context": 32768, "output": 8192 } },
+        "qwen2.5-coder:7b-ctx": { "name": "Qwen 2.5 Coder 7B ctx (local)", "limit": { "context": 32768, "output": 8192 } }
+      }
+    }
+  },
+
+  "instructions": [
+    "/home/faqihhakim/.claude/rules/agents.md",
+    "/home/faqihhakim/.claude/rules/coding-style.md",
+    "/home/faqihhakim/.claude/rules/git-workflow.md",
+    "/home/faqihhakim/.claude/rules/hooks.md",
+    "/home/faqihhakim/.claude/rules/patterns.md",
+    "/home/faqihhakim/.claude/rules/performance.md",
+    "/home/faqihhakim/.claude/rules/scientific-python.md",
+    "/home/faqihhakim/.claude/rules/testing.md"
+  ],
+
+  "references": {
+    "security-rules": {
+      "path": "/home/faqihhakim/.claude/rules/security.md",
+      "description": "Security rules — use for auth, secrets, XSS, SQLi, OWASP review"
+    }
+  },
+
+  // Model assignment: head+coder Qwen (OpenRouter), general/explore/reviewer/title/summary MiniMax-highspeed (free).
+  "agent": {
+    "build": {
+      "mode": "primary",
+      "model": "minimax-coding-plan/MiniMax-M3",
+      "steps": 80,
+      "prompt": "Build agent (MiniMax-M3 head). Terse. No greeting, no recap. Output: code/diff first, then bullets. AI/ML: mlflow + notebook-strip. Python: ruff. TS: eslint/prettier. Use @security-rules for security-sensitive code. Delegate: hard code → `coder` (Qwen-27B, paid), routine → `coder-minimax` (free). Fallback: if MiniMax unavailable/rate-limited → `coder-deepseek` (DeepSeek-flash). Long-running: batch work, commit+push per batch → tg-notify."
+    },
+    "plan": {
+      "mode": "primary",
+      "model": "minimax-coding-plan/MiniMax-M3",
+      "steps": 30,
+      "prompt": "Plan agent (MiniMax-M3). Read-only. Terse bullets. Decompose: files, deps, risks. No edits."
+    },
+    "general": {
+      "mode": "primary",
+      "model": "minimax-coding-plan/MiniMax-M2.7-highspeed",
+      "steps": 20,
+      "prompt": "General agent (MiniMax-highspeed). Terse bullets. Answer, route, or handoff. No fluff."
+    },
+    "explore": {
+      "mode": "subagent",
+      "model": "minimax-coding-plan/MiniMax-M2.7-highspeed",
+      "steps": 20,
+      "prompt": "Explore agent. Terse. Return file:line, symbols, 1-line findings. grep/glob only."
+    },
+    "pm": {
+      "mode": "primary",
+      "model": "minimax-coding-plan/MiniMax-M3",
+      "steps": 60,
+      "prompt": "PM/orchestrator (MiniMax-M3). Delegate via task tool: `coder` (Qwen-27B, paid, for hard code) or `coder-minimax` (free, for routine). Use `reviewer` for code review. todowrite. Return terse summary. Long-running: batch work, commit+push per batch."
+    },
+    "coder": {
+      "mode": "subagent",
+      "model": "openrouter/qwen/qwen3.8-27b",
+      "options": { "reasoning": { "max_tokens": 2000 } },
+      "steps": 50,
+      "prompt": "Qwen-27B code specialist. Terse. Output: code/diff only. No prose. Used ONLY when build/pm delegate code tasks here. AI/ML: mlflow+notebook. Python: ruff. TS: eslint/prettier. Reasoning capped at 2k tokens (cost control)."
+    },
+    "coder-minimax": {
+      "mode": "subagent",
+      "model": "minimax-coding-plan/MiniMax-M2.7",
+      "steps": 60,
+      "prompt": "Routine coder (MiniMax-M2.7, free). Terse. Output: code/diff only. No prose. Default for routine code. AI/ML: mlflow+notebook. Python: ruff. TS: eslint/prettier."
+    },
+    "coder-deepseek": {
+      "mode": "subagent",
+      "model": "deepseek/deepseek-v4-flash",
+      "steps": 50,
+      "prompt": "Fallback coder (DeepSeek-flash, $0.14/M). Used when MiniMax unavailable/rate-limited. Terse. Output: code/diff only. No prose. AI/ML: mlflow+notebook. Python: ruff. TS: eslint/prettier."
+    },
+    "reviewer": {
+      "mode": "subagent",
+      "model": "minimax-coding-plan/MiniMax-M2.7-highspeed",
+      "steps": 30,
+      "prompt": "Reviewer. Terse. Findings list: severity, file:line, fix. No rewrites. Use @security-rules for OWASP."
+    },
+    "title": { "model": "minimax-coding-plan/MiniMax-M2.7-highspeed" },
+    "summary": { "model": "minimax-coding-plan/MiniMax-M2.7-highspeed" },
+    "copilot-free": {
+      "mode": "subagent",
+      "model": "github-copilot/gpt-4.1",
+      "prompt": "Copilot free fallback (gpt-4.1). Terse bullets. Use when Qwen + MiniMax fail or rate-limited."
+    },
+    "local-coder": {
+      "mode": "subagent",
+      "model": "ollama/qwen2.5-coder:7b-ctx",
+      "prompt": "Local coder (Ollama offline). Terse. Output code."
+    },
+    "local-general": {
+      "mode": "subagent",
+      "model": "ollama/qwen3.5:9b-ctx",
+      "prompt": "Local general (Ollama offline). Terse. Answer only."
+    }
+  },
+
+  // hemat token: auto-compact + batasi output tool yang besar
+  // CC AUTO_COMPACT_WINDOW ~ preserve_recent_tokens; tidak ada knop persen (auto saat penuh)
+  "compaction": {
+    "auto": true,
+    "tail_turns": 15,
+    "preserve_recent_tokens": 200000,
+    "prune": true,
+    "reserved": 12000
+  },
+  "tool_output": { "max_lines": 120, "max_bytes": 6144 },
+  "share": "disabled",
+
+  // format on save: built-in formatters (prettier TS/JS, ruff Python[kalau built-in], dll)
+  "formatter": true,
+
+  // batasi daftar tool di system prompt primary agent (hemat ~1-2k token)
+  "experimental": {
+    "primary_tools": ["bash", "read", "edit", "grep", "glob", "task"]
+  },
+
+  "mcp": {
+    // Lazy: hanya aktif kalau kamu nyalain via /mcp. Jangan auto-launch tiap startup.
+    "jupyter": {
+      "type": "local",
+      "command": ["uvx", "jupyter-mcp-server@latest"],
+      "environment": {
+        "JUPYTER_URL": "http://localhost:8888",
+        "JUPYTER_TOKEN": "claude-code-mcp",
+        "ALLOW_IMG_OUTPUT": "true",
+        "SANDBOX_VARIANT": "jupyter-server"
+      },
+      "enabled": false
+    },
+    "filesystem": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "/home/faqihhakim/Project"],
+      "enabled": true
+    },
+    "github": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_TOKEN}"
+      },
+      "enabled": false
+    },
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "-y", "@playwright/mcp@latest", "--browser", "chromium"],
+      "enabled": true
+    },
+    "postgres": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-postgres"],
+      "environment": {
+        "DATABASE_URI": "{env:DATABASE_URI}"
+      },
+      "enabled": false
+    }
+  }
+}
