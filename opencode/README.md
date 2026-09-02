@@ -47,6 +47,31 @@ Qwen is the code specialist, invoked on demand by `build` or `pm`. Routine code 
 
 See `rules/performance.md` in the main repo. Plugin `~/.config/opencode/plugin/tg-track.ts` logs compactions and chats to `~/.local/share/opencode/session-tracker.log` and sends Telegram on each compaction.
 
+## Project setup
+
+For each project, create an `AGENTS.md` at the project root with stack, conventions, test commands, and local dev steps. opencode reads `AGENTS.md` automatically. Use `/init-project` to scaffold.
+
+## Commands
+
+- `/init-project`: scaffold project context (`AGENTS.md`)
+- `/daily-summary`: show today's compactions, messages, test pass/fail counts
+- `/track`: tail session-tracker log
+- `/commit`, `/commit-push-pr`: git workflow with pre-commit tests
+
+## Plugins
+
+`~/.config/opencode/plugin/tg-track.ts`:
+
+- sends Telegram on each compaction event
+- runs project tests on `git commit`, sends pass/fail to Telegram
+- logs compactions, messages, and test runs to `~/.local/share/opencode/`
+
+## MCP
+
+- `filesystem` and `playwright` enabled by default
+- `jupyter`, `github`, `postgres` lazy (`enabled: false`); enable via `/mcp` after providing credentials
+- credentials via env: `{env:GITHUB_TOKEN}` for GitHub, `{env:DATABASE_URI}` for Postgres
+
 ## Install on a new device
 
 1. Clone and checkout branch:
