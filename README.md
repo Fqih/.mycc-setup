@@ -1,32 +1,33 @@
 # Fqih's Claude Code Setup
 
-Setup Claude Code pribadi saya (Fqih). Repo publik ini adalah **sumber kebenaran** untuk konfigurasi global Claude Code yang sinkron antar device.
+Mirror konfigurasi global Claude Code. Sync antar device via git.
 
 ## Apa ini
 
-Repo ini berisi **mirror** skill/rule/agent/command yang saya install di `~/.claude/` global. Bukan plugin — ini file markdown langsung yang bisa di-copy atau di-symlink ke `~/.claude/` di device baru.
+Mirror skill/rule/agent/command dari `~/.claude/` global. Markdown langsung — copy atau symlink ke `~/.claude/` di device baru.
 
 **Struktur:**
 ```
 .
-├── README.md           # this file
-├── LICENSE             # MIT
-├── NOTICE.md           # attribution untuk forked content
-├── .gitignore          # exclude secrets, editor junk
-├── .gitleaks.toml      # config untuk secret-scan
-├── rules/              # 9 markdown rules → ~/.claude/rules/
-├── skills/             # 20 markdown skills → ~/.claude/skills/
-├── agents/             # 9 agent definitions → ~/.claude/agents/
-└── commands/           # 15 slash commands → ~/.claude/commands/
+├── README.md
+├── CONTRIBUTING.md   # commit convention + checklist
+├── LICENSE           # MIT
+├── NOTICE.md         # attribution untuk forked content
+├── .gitignore
+├── .gitleaks.toml    # config untuk secret-scan
+├── rules/            # 9 markdown rules
+├── skills/           # 27 markdown skills
+├── agents/           # 9 agent definitions
+└── commands/         # 25 slash commands
 ```
 
-Lihat [NOTICE.md](NOTICE.md) untuk attribution konten forked dari [WorldFlowAI/everything-claude-code](https://github.com/WorldFlowAI/everything-claude-code) (MIT).
+Lihat [NOTICE.md](NOTICE.md) untuk attribution dari [WorldFlowAI/everything-claude-code](https://github.com/WorldFlowAI/everything-claude-code) (MIT).
 
 ## Profil
 
-- **Primary**: AI engineer + Data Scientist (Python, ML/DL, ipynb)
-- **Secondary**: Fullstack web (Next.js, TypeScript, Tailwind)
-- **Stack**: Linux (Fedora 44) + Windows 11, Tailscale mesh VPN, ROCm + CUDA GPU
+- Primary: AI engineer + Data Scientist (Python, ML/DL, ipynb)
+- Secondary: Fullstack web (Next.js, TypeScript, Tailwind)
+- Stack: Linux Fedora 44 + Windows 11, Tailscale mesh, ROCm + CUDA
 
 ## Device
 
@@ -36,78 +37,96 @@ Lihat [NOTICE.md](NOTICE.md) untuk attribution konten forked dari [WorldFlowAI/e
 | HP Pavilion | Windows 11 | NVIDIA GTX 1650 (CUDA, 4GB) | Secondary dev, inference ringan |
 | HP Android | — | — | Mobile client via Tailscale |
 
-Lihat skill [`local-ml-gpu`](skills/local-ml-gpu/SKILL.md) untuk detail setup per device.
+Detail per device di skill [`local-ml-gpu`](skills/local-ml-gpu/SKILL.md).
 
 ## Identity rules (WAJIB)
 
 - `user.name`: `Fqih`
 - `user.email`: `mhmdfkih21@gmail.com`
-- **NO** Claude co-author di commit message
-- **NO** `🤖 Generated with [Claude Code]` footer
+- NO Claude co-author di commit message
+- NO `🤖 Generated with [Claude Code]` footer
 
 Skill `atomic-github-push` hard-block violation. Skill `secret-scan` hard-block secret leak.
 
-## Skills custom (5)
+## Skills
 
-Semua skill ada di `skills/` repo ini dan terinstall di `~/.claude/skills/`:
+Full list di `skills/`. Highlight custom Fqih:
 
 | Skill | Fungsi |
 |---|---|
-| `atomic-github-push` | Commit + push satu unit atomik. Cek identity, scan secret, ruff lint, no Claude co-author, rebase, push. |
-| `secret-scan` | gitleaks wrapper. Block secret (API key, token, password) dari nyampe ke GitHub. |
+| `atomic-github-push` | Commit + push atomik. Identity + secret scan + ruff lint + rebase + push. |
+| `secret-scan` | gitleaks wrapper. Block secret dari nyampe ke GitHub. |
 | `telegram-notify` | Notifikasi ke HP via Telegram bot saat long-running job selesai. |
 | `remote-workflow` | Tailscale + SSH + code-server. Akses laptop dari HP/Pavilion. |
 | `local-ml-gpu` | ROCm (Zephyrus) + CUDA (Pavilion) workflow. |
+| `audit-workflow` | 9-dimension audit end-of-sprint, post findings ke GitHub issues. |
+| `document-intelligence` | PDF/Word reader + extractor + summarizer (PyMuPDF + python-docx). |
+| `natural-writing` | Anti-AI-tells style guide untuk docs + commit messages. |
+| `api-docs` | OpenAPI/Swagger auto-gen + MkDocs Material setup. |
+| `dependency-audit` | pip-audit + npm audit + SBOM + license compliance. |
+| `sql-patterns` | Query optimization + per-engine (Postgres/BigQuery/ClickHouse/DuckDB). |
 
-Plus 4 custom lain (`fullstack-web`, `notebook-hygiene`, `ds-workflow`, `llm-engineering`). Total 9 skill custom + 11 skill forked dari ECC.
+Plus AI/ML standard: `rag-patterns`, `ml-deployment`, `agent-design`, `llm-engineering`, `eval-harness`, `ds-workflow`, `notebook-hygiene`. Plus fullstack: `fullstack-web`, `backend-patterns`, `frontend-patterns`, `coding-standards`, `docker-patterns`, `tdd-workflow`. Total **27 skills** (17 forked dari ECC + 10 custom Fqih).
 
-## Skills, rules, agents, commands (full mirror)
+## Rules + agents + commands
 
-Di repo ini ada full mirror, jadi bisa langsung di-copy tanpa download dari upstream.
+**9 rules** di `rules/`: agents, coding-style, git-workflow, hooks, patterns, performance, security, testing, scientific-python
 
-**9 rules** di `rules/`:
-- agents, coding-style, git-workflow, hooks, patterns, performance, security, testing, scientific-python
+**9 agents** di `agents/`: architect, build-error-resolver, code-reviewer, doc-updater, e2e-runner, planner, refactor-cleaner, security-reviewer, tdd-guide
 
-**20 skills** di `skills/` — termasuk 11 forked dari [WorldFlowAI/everything-claude-code](https://github.com/WorldFlowAI/everything-claude-code) (MIT) + 9 custom Fqih.
+**25 commands** di `commands/` — highlight custom:
 
-**9 agents** di `agents/`:
-- architect, build-error-resolver, code-reviewer, doc-updater, e2e-runner, planner, refactor-cleaner, security-reviewer, tdd-guide
+| Command | Fungsi |
+|---|---|
+| `/atomic-push` | Full atomic push workflow |
+| `/secret-scan` | Manual gitleaks scan |
+| `/pdf-read` | Baca PDF/Word + extract + summarize |
+| `/gpu-check` | Verify ROCm/CUDA + compute sanity |
+| `/experiment-init` | Init ML experiment dir dengan mlflow + seed |
+| `/notebook-strip` | nbstripout output removal |
+| `/audit-end-sprint` | 9-dimension audit + post GitHub issues |
 
-**15 commands** di `commands/`:
-- `/build-fix`, `/checkpoint`, `/code-review`, `/e2e`, `/eval`, `/learn`, `/orchestrate`, `/plan`, `/refactor-clean`, `/setup-pm`, `/tdd`, `/test-coverage`, `/update-codemaps`, `/update-docs`, `/verify`
+Plus forked: `/build-fix`, `/checkpoint`, `/code-review`, `/e2e`, `/eval`, `/learn`, `/orchestrate`, `/plan`, `/refactor-clean`, `/setup-pm`, `/tdd`, `/test-coverage`, `/update-codemaps`, `/update-docs`, `/verify`, `/commit`, `/commit-push-pr`, `/clean_gone`.
 
 ## MCP servers
 
-Konfigurasi di `~/.claude.json` → `mcpServers`:
+Di `~/.claude.json` → `mcpServers`:
 
 | Server | Purpose |
 |---|---|
-| `jupyter` | Jupyter notebook execution via [datalayer/jupyter-mcp-server](https://github.com/datalayer/jupyter-mcp-server). Butuh `jupyter lab` running di port 8888. |
+| `jupyter` | Notebook execution via [datalayer/jupyter-mcp-server](https://github.com/datalayer/jupyter-mcp-server). Butuh `jupyter lab` di port 8888. |
+| `filesystem` | File access ke `~/Project` |
+| `github` | GitHub API (issues, PRs, repo info) |
+| `playwright` | Browser automation + E2E |
+| `postgres` | Postgres DB query |
 
 ## System tools
 
 | Tool | Versi | Install |
 |---|---|---|
-| `gitleaks` | 8.30.1+ | Download binary ke `~/.local/bin/` (lihat skill `secret-scan`) |
+| `gitleaks` | 8.30.1+ | Binary ke `~/.local/bin/` (lihat skill `secret-scan`) |
 | `mlflow` | 3.15.2+ | `pip install --user mlflow` |
 | `nbstripout` | 0.9.1+ | `pip install --user nbstripout` |
 | `uvx` | latest | Untuk jupyter-mcp-server isolated env |
 | `tailscale` | latest | `curl -fsSL https://tailscale.com/install.sh \| sh` |
+| `pymupdf` | 1.28+ | `pip install --user pymupdf` (PDF read) |
+| `python-docx` | 1.0+ | `pip install --user python-docx` (Word read) |
+| `pypandoc` | 1.10+ | `pip install --user pypandoc` (universal converter) |
 
-## Cara install di device baru
+## Install di device baru
 
 ### Linux (Fedora/Ubuntu/Debian)
 
 ```bash
-# 1. Clone repo ini
+# 1. Clone
 git clone https://github.com/Fqih/.mycc-setup.git ~/.mycc-setup
 
-# 2. Setup git identity (WAJIB, jangan skip)
+# 2. Git identity (WAJIB)
 git config --global user.name "Fqih"
 git config --global user.email "mhmdfkih21@gmail.com"
 
-# 3. Install system tools
-pip install --user mlflow nbstripout
+# 3. System tools
+pip install --user mlflow nbstripout pymupdf python-docx pypandoc
 mkdir -p ~/.local/bin
 curl -sL -o /tmp/gitleaks.tar.gz \
     "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz"
@@ -115,14 +134,18 @@ tar xzf /tmp/gitleaks.tar.gz -C ~/.local/bin/ gitleaks
 rm /tmp/gitleaks.tar.gz
 export PATH="$HOME/.local/bin:$PATH"
 
-# 4. Install skills/rules/agents/commands dari repo ini (full mirror)
+# 4. Copy mirror
 mkdir -p ~/.claude/{rules,skills,agents,commands}
 cp -r ~/.mycc-setup/skills/* ~/.claude/skills/
 cp ~/.mycc-setup/rules/*.md ~/.claude/rules/
 cp ~/.mycc-setup/agents/*.md ~/.claude/agents/
 cp ~/.mycc-setup/commands/*.md ~/.claude/commands/
 
-# 5. (Opsional) Setup MCP jupyter di ~/.claude.json — lihat ~/.mycc-setup/mcp-servers.example.json
+# 5. Setup git templateDir untuk auto-install hooks di setiap new repo
+mkdir -p ~/.claude/git-template/hooks
+ln -sf ~/.claude/hooks/pre-commit.sh ~/.claude/git-template/hooks/pre-commit
+ln -sf ~/.claude/hooks/pre-push.sh ~/.claude/git-template/hooks/pre-push
+git config --global init.templateDir ~/.claude/git-template
 
 # 6. Verify
 git config --global user.name   # harus: Fqih
@@ -142,7 +165,7 @@ git config --global user.name "Fqih"
 git config --global user.email "mhmdfkih21@gmail.com"
 
 # 3. Tools
-py -m pip install --user mlflow nbstripout
+py -m pip install --user mlflow nbstripout pymupdf python-docx pypandoc
 
 # gitleaks: download .zip dari release, ekstrak ke folder di PATH
 
@@ -158,7 +181,7 @@ Copy-Item -Force "$src\commands\*.md" "$dst\commands\"
 
 ## Tailscale mesh
 
-Semua device masuk mesh via akun Tailscale yang sama:
+Semua device via akun Tailscale yang sama:
 
 ```bash
 # Zephyrus (Linux)
@@ -173,7 +196,7 @@ winget install Tailscale.Tailscale
 # install dari Play Store / App Store
 ```
 
-Setelah login, semua device saling reachable via IP `100.x.y.z`. SSH antar device: `ssh fqih@100.x.y.z`.
+Setelah login, semua device saling reachable via `100.x.y.z`. SSH: `ssh <user>@100.x.y.z`.
 
 Detail di skill `remote-workflow`.
 
@@ -181,39 +204,52 @@ Detail di skill `remote-workflow`.
 
 Trigger: bilang "commit and push" / "atomic push" / `/atomic-push`.
 
-Urutan step (lihat skill untuk lengkap):
+Urutan step:
 
-1. Cek `git status` clean
-2. Cek identity = `Fqih / mhmdfkih21@gmail.com`
-3. **Scan secret** dengan `gitleaks detect --staged --no-git --source .`
-4. Strip notebook output (`.ipynb` via `nbstripout`)
-5. Run `ruff check .` + `ruff format --check .`
-6. Cek commit message: **NO** `Co-Authored-By: ...Claude/Anthropic`, **NO** `🤖 Generated with...`
+1. `git status` clean
+2. Identity = `Fqih / mhmdfkih21@gmail.com`
+3. Scan secret via `git diff --cached | gitleaks detect --pipe --no-git`
+4. Strip notebook output (`nbstripout`)
+5. `ruff check .` + `ruff format --check .`
+6. Commit message: NO `Co-Authored-By: ...Claude/Anthropic`, NO `🤖 Generated with...`
 7. `git commit`
 8. `git pull --rebase`
 9. Pre-push scan secret (full)
 10. `git push`
 
-Setengah jalan gagal → abort. Tidak ada commit setengah jadi, tidak ada push tanpa verifikasi.
+Step gagal → abort. Tidak ada commit setengah jadi, tidak ada push tanpa verifikasi.
+
+## Audit end-of-sprint
+
+Setiap akhir sprint (default 7 hari window):
+
+```
+/audit-end-sprint
+```
+
+Run 9-dimension sweep (security, quality, tests, dead code, tech-debt, perf, docs, deps, git-hygiene). Setiap finding → GitHub issue dengan label `audit-sprint-YYYY-MM-DD` + dimension + severity.
+
+Next sprint: `gh issue list --label "audit-sprint-$(date +%Y-%m-%d)"`.
 
 ## Security
 
-- Telegram bot token: simpan di `~/.config/telegram.env` (chmod 600), **JANGAN** commit
+- Telegram bot token: `~/.config/telegram.env` (chmod 600), **JANGAN** commit
 - Tailscale IP: dinamis, tidak perlu dirahasiakan (private mesh)
 - SSH keys: `~/.ssh/id_ed25519`, backup ke password manager
-- API keys (OpenAI/Anthropic/AWS): simpan di `~/.config/<service>.env`, `<service>.env.example` di-commit sebagai template
+- API keys: `~/.config/<service>.env`, `<service>.env.example` di-commit sebagai template
 
-Skill `secret-scan` aktif secara default di atomic push. Hard block kalau ada `.env`/token di staged files.
+Skill `secret-scan` aktif di atomic push. Hard block `.env`/token di staged files.
 
 ## File map
 
 ```
 ~/.claude/
 ├── rules/          # 9 markdown rules
-├── skills/         # 20 markdown skills (5 custom + 15 dari ECC)
+├── skills/         # 27 markdown skills
 ├── agents/         # 9 agent definitions
-├── commands/       # 15 slash commands
-└── settings.json   # model + permission + plugin config
+├── commands/       # 25 slash commands
+├── hooks/          # pre-commit.sh + pre-push.sh
+└── settings.json
 
 ~/.claude.json      # MCP servers + user preferences
 
@@ -237,3 +273,5 @@ MIT. Base content dari [WorldFlowAI/everything-claude-code](https://github.com/W
 - [gitleaks/gitleaks](https://github.com/gitleaks/gitleaks) — secret scanner
 - [mlflow/mlflow](https://github.com/mlflow/mlflow) — experiment tracking
 - [tailscale/tailscale](https://github.com/tailscale/tailscale) — mesh VPN
+- [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) — superpowers + commit-commands
+- [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) — terse output mode
