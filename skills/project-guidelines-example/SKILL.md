@@ -1,3 +1,8 @@
+---
+name: project-guidelines-example
+description: Example project-specific skill template based on a real production app (Zenith) — shows structure for project conventions, commit style, features, infra. Trigger on "project guidelines", "zenith", "project conventions", "template".
+---
+
 # Project Guidelines Skill (Example)
 
 This is an example of a project-specific skill. Use this as a template for your own projects.

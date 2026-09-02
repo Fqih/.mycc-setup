@@ -1,3 +1,8 @@
+---
+name: verification-loop
+description: Comprehensive production verification system — build, typecheck, lint, test suite with coverage, security scan, diff review, verdict report. Trigger on "/verify", "verification", "quality gate", "before PR", "before commit".
+---
+
 # Verification Loop Skill
 
 A comprehensive verification system for Claude Code sessions.
