@@ -40,15 +40,27 @@ fi
 # ============================================================
 # 3. Verify push target
 # ============================================================
+force_flag=""
+for arg in "$@"; do
+    [ "$arg" = "--force" ] || [ "$arg" = "-f" ] && force_flag="yes"
+done
+
 while read local_ref local_sha remote_ref remote_sha; do
     BRANCH=$(echo "$local_ref" | sed 's|refs/heads/||')
     echo "→ pushing $BRANCH ($local_sha)"
 
-    # Block force push ke main/master
+    # Block force push ke main/master unless explicit --force
     if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
-        if [ "$remote_sha" != "0000000000000000000000000000000000000000" ]; then
-            echo "BLOCKED: force push ke $BRANCH not allowed"
-            exit 1
+        if [ -z "$force_flag" ]; then
+            # Detect non-fast-forward: remote exists and local not descendant
+            if [ "$remote_sha" != "0000000000000000000000000000000000000000" ]; then
+                merge_base=$(git merge-base "$local_sha" "$remote_sha" 2>/dev/null || echo "")
+                if [ "$merge_base" != "$remote_sha" ]; then
+                    echo "BLOCKED: non-fast-forward push ke $BRANCH"
+                    echo "Pull + rebase dulu, atau pakai git push --force (kalau intentional)"
+                    exit 1
+                fi
+            fi
         fi
     fi
 done
