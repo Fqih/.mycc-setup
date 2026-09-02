@@ -52,6 +52,9 @@ For long sessions (e.g. background work overnight):
 
 - Batch work into 1-2 features per batch, not one giant task
 - Commit and push per batch; pre-push hook triggers Telegram notify
+- Plugin `~/.config/opencode/plugin/tg-track.ts` runs tests on `git commit` (auto-detects pytest/vitest/jest) and sends Telegram with pass/fail
+- Plugin logs compactions and test runs to `~/.local/share/opencode/`
+- Use `/daily-summary` for morning review of activity, tests, and compactions
 - Compaction auto-runs at context limit; tune via `compaction.tail_turns` and `preserve_recent_tokens`
 - Each agent has a `steps` limit to prevent runaway loops
 - opencode snapshot is on by default; sessions resume after crash
@@ -63,10 +66,10 @@ A typical overnight timeline:
 ```
 19:00  start session; write todowrite list
 19:15  batch 1 runs
-19:45  /commit && git push (telegram fires)
+19:45  /commit (auto-tests fire) && git push (telegram fires)
 20:00  batch 2 runs
 ...
-08:00  morning: review last telegram notif
+08:00  morning: run /daily-summary, review last telegram notif
 ```
 
 If the agent stalls or loops, stop the session and inspect `~/.local/share/opencode/`.
