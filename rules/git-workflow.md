@@ -43,3 +43,18 @@ When creating PRs:
 4. **Commit & Push**
    - Detailed commit messages
    - Follow conventional commits format
+
+## Push → Telegram Notify (WAJIB)
+
+Setiap `git push` wajib mengirim notifikasi ke Telegram. Di-enforce oleh hook:
+
+- **Hook**: `hooks/pre-push.sh` section 5 memanggil `tg-notify` (`~/.local/bin/tg-notify`).
+- **Pasang sekali per mesin** (semua repo otomatis):
+  ```bash
+  git config --global core.hooksPath ~/.claude/hooks
+  ```
+  Atau per-repo: `ln -sf ~/.claude/hooks/pre-push.sh .git/hooks/pre-push`.
+- **Token/chat**: `~/.config/telegram.env` (chmod 600), jangan commit.
+- Push yang tidak lolos pre-push (identity salah, secret, non-fast-forward) **tidak** akan sampai ke Telegram karena hook berhenti sebelum section notify.
+
+`core.hooksPath` global meng-override hook per-repo klasik (`.git/hooks/`) — pastikan tidak ada repo yang butuh hook custom sendiri.
