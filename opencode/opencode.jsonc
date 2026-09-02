@@ -149,6 +149,9 @@
   // format on save: built-in formatters (prettier TS/JS, ruff Python[kalau built-in], dll)
   "formatter": true,
 
+  // LSP servers: Python (pyright) + TypeScript. Aktifkan navigasi/intel/symbol.
+  "lsp": true,
+
   // batasi daftar tool di system prompt primary agent (hemat ~1-2k token)
   "experimental": {
     "primary_tools": ["bash", "read", "edit", "grep", "glob", "task"]
