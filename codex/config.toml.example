@@ -1,0 +1,20 @@
+# Safe user-level defaults for ~/.codex/config.toml.
+# Keep credentials, provider URLs, MCP servers, and machine-specific paths out
+# of this tracked template.
+
+model = "gpt-5.5"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "cached"
+check_for_update_on_startup = true
+
+[features]
+apps = true
+multi_agent = true
+hooks = true
+
+[skills]
+max_context_tokens = 10000
+
+[tui]
+notifications = true

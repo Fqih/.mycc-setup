@@ -1,10 +1,14 @@
-# Fqih's Claude Code Setup
+# Fqih's AI coding setup
 
-Mirror konfigurasi global Claude Code. Sync antar device via git.
+Mirror konfigurasi coding assistant untuk Claude Code, OpenCode, dan Codex.
+Branch `codex` menambahkan packaging native Codex; lihat
+[`codex/README.md`](codex/README.md).
 
 ## Apa ini
 
-Mirror skill/rule/agent/command dari `~/.claude/` global. Markdown langsung — copy atau symlink ke `~/.claude/` di device baru.
+Mirror skill/rule/agent/command dari setup Claude Code, dengan adapter native
+untuk OpenCode dan Codex. Markdown langsung — copy atau symlink ke client yang
+dipakai di device baru.
 
 **Struktur:**
 ```
